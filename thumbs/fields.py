@@ -313,8 +313,8 @@ class ImageThumbsField(ImageField):
 
         super(ImageField, self).__init__(**kwargs)
 
-    def south_field_triple(self):
-        from south.modelsinspector import introspector
-        field_class = 'django.db.models.fields.files.ImageField'
-        args, kwargs = introspector(self)
-        return (field_class, args, kwargs)
+    def deconstruct(self):
+        name, path, args, kwargs = super(ImageThumbsField, self).deconstruct()
+        if self.sizes:
+            kwargs['sizes'] = self.sizes
+        return name, path, args, kwargs
