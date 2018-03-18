@@ -13,7 +13,7 @@ setup(
     author='Ravi Raja Merugu',
     author_email='rrmerugu@gmail.com',
     long_description=open(README, 'r').read(),
-    py_modules=['django_thumbs'],
+    packages=['django_thumbs'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
