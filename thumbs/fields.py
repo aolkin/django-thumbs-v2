@@ -2,6 +2,8 @@
 """
 django-thumbs by Antonio Melé
 http://django.es
+
+modified by Ravi RT Merugu to support python 3.x
 """
 
 from django.db.models import ImageField
@@ -17,13 +19,16 @@ except ImportError:
     import ExifTags
     import ImageFile
 
-import cStringIO
+try:
+    import cStringIO
+except Exception:
+    from io import BytesIO
 import logging
+
 logger = logging.getLogger(__name__)
 import re
 import os
 import sys
-
 
 THUMBS_DELIMITER = getattr(settings, 'THUMBS_DELIMITER', '-')
 # always save jpg thumbs regardless of original file format
@@ -54,6 +59,7 @@ A context manager for suppressing the stderr activity of PIL's C libraries.
 Based on http://stackoverflow.com/a/978264/155370
 
 """
+
     def __enter__(self):
         self.stderr_fd = sys.__stderr__.fileno()
         self.null_fd = os.open(os.devnull, os.O_RDWR)
@@ -95,7 +101,6 @@ def sting2tuple(wxh, original_w_h):
 
 
 def resize_content(original, size, format_ext):
-
     original.seek(0)  # http://code.djangoproject.com/ticket/8222
     image = Image.open(original)
 
@@ -149,8 +154,12 @@ def resize_content(original, size, format_ext):
     if format == 'JPG':
         format = 'JPEG'
 
-    io = cStringIO.StringIO()
 
+    try:
+        io = cStringIO.StringIO()
+    except Exception:
+        io = BytesIO()
+    import logging
     # http://www.pythonware.com/library/pil/handbook/format-gif.htm
     # http://www.pythonware.com/library/pil/handbook/format-png.htm
     # http://www.pythonware.com/library/pil/handbook/format-jpeg.htm
@@ -164,13 +173,13 @@ def resize_content(original, size, format_ext):
             # https://github.com/matthewwithanm/django-imagekit/issues/91#issuecomment-5238299
             with quiet():
                 resized.save(io, 'JPEG', quality=THUMBS_QUALITY,
-                    optimize=THUMBS_OPTIMIZE, progressive=THUMBS_PROGRESSIVE)
+                             optimize=THUMBS_OPTIMIZE, progressive=THUMBS_PROGRESSIVE)
         except IOError:
             old_maxblock = ImageFile.MAXBLOCK
             ImageFile.MAXBLOCK = max(resized.size) ** 2
             try:
                 resized.save(io, 'JPEG', quality=THUMBS_QUALITY,
-                    optimize=THUMBS_OPTIMIZE, progressive=THUMBS_PROGRESSIVE)
+                             optimize=THUMBS_OPTIMIZE, progressive=THUMBS_PROGRESSIVE)
             finally:
                 ImageFile.MAXBLOCK = old_maxblock
 
@@ -187,8 +196,8 @@ def split_original(name):
 
     split = name.rsplit('.', 1)
     return {'base': split[0],
-        # original name might not have ext
-        'ext': split[1] if len(split) == 2 else ''}
+            # original name might not have ext
+            'ext': split[1] if len(split) == 2 else ''}
 
 
 def determine_thumb(size, name, jpg=THUMBS_JPG, delimiter=THUMBS_DELIMITER):
@@ -271,7 +280,7 @@ class ImageThumbsFieldFile(ImageFieldFile):
                 # split off ext and pass ext in as format
                 thumb_base_ext = split_original(size_name)
                 size_content = resize_content(content, size,
-                    thumb_base_ext['ext'])
+                                              thumb_base_ext['ext'])
                 saved_name = self.storage.save(size_name, size_content)
                 if saved_name != size_name:
                     raise ValueError(
@@ -296,7 +305,7 @@ class ImageThumbsField(ImageField):
     attr_class = ImageThumbsFieldFile
 
     def __init__(self, verbose_name=None, name=None,
-            width_field=None, height_field=None, sizes=None, **kwargs):
+                 width_field=None, height_field=None, sizes=None, **kwargs):
 
         # django
         self.verbose_name = verbose_name
