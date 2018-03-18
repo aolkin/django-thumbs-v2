@@ -37,7 +37,7 @@ With `ImageThumbsField` you retrieve the URL for every thumbnail specifying its 
 
 Install django-thumbs into a virtualenv using pip:
 
-    (env)$ pip install -e git+https://github.com/rrmerugu/django-thumbs.git#egg=django-thumbs
+    (env)$ pip install git+https://github.com/rrmerugu/django-thumbs-v2.git#egg=django-thumbs-v2
 
 Add `thumbs` to your installed apps:
 
