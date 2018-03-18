@@ -18,7 +18,7 @@ Forked from <https://code.google.com/p/django-thumbs/>.
 ## Example
 
     from django.db import models
-    from thumbs.fields import ImageThumbsField
+    from django_thumbs.fields import ImageThumbsField
 
     class Person(models.Model):
 
@@ -149,7 +149,7 @@ In Django settings, instead of
 
 use `PublicS3BotoStorage`:
 
-    DEFAULT_FILE_STORAGE = 'thumbs.backends.PublicS3BotoStorage'
+    DEFAULT_FILE_STORAGE = 'django_thumbs.backends.PublicS3BotoStorage'
 
 `PublicS3BotoStorage` looks for `AWS_S3_SECURE_URLS` and `AWS_S3_CUSTOM_DOMAIN` settings.  `AWS_S3_SECURE_URLS` sets `https` or `http`.  `AWS_S3_CUSTOM_DOMAIN` sets custom domain or `s3.amazonaws.com`.
 
