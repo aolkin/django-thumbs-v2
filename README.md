@@ -43,7 +43,7 @@ Add `thumbs` to your installed apps:
 
     INSTALLED_APPS = (
         # ...
-        'thumbs',
+        'django_thumbs',
     )
 
 ## Usage
