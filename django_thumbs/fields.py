@@ -279,8 +279,10 @@ class ImageThumbsFieldFile(ImageFieldFile):
                 # thumb ext is valid out of determine_thumb,
                 # split off ext and pass ext in as format
                 thumb_base_ext = split_original(size_name)
-                size_content = resize_content(self.storage.open(self.name),
-                                              size, thumb_base_ext['ext'])
+                if content.closed:
+                    content = self.storage.open(self.name)
+                size_content = resize_content(content, size,
+                                              thumb_base_ext['ext'])
                 saved_name = self.storage.save(size_name, size_content)
                 if saved_name != size_name:
                     raise ValueError(
